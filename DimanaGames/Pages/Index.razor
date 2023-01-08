@@ -1,0 +1,139 @@
+﻿@page "/"
+
+<!-- untuk css ukuran konten dan ukuran kotak hewan -->
+<style>
+    .container{
+        width: 400px;
+    }
+    button{
+        width:100px;
+        height:100px;
+        font-size:50px;
+    }
+</style>
+
+<!-- Judul di browser -->
+<PageTitle>Dimana Games</PageTitle>
+
+<!-- membungkus konten yang ada didalam nya -->
+<div class="container">
+    <div class="row">
+       @* @foreach (var animal in animals)
+        {
+            <div class="col-3">
+                <button type="button" class="btn btn-outline-dark">
+                    <h1>@animal</h1>
+                </button>                
+            </div>
+        }*@
+       @* @foreach (var animal in suffledAnimals)
+        {
+            <div class="col-3">
+                <button @onclick="(() => ButtonClick(animal))"
+                    type="button" class="btn btn-outline-dark">
+                    <h1>@animal</h1>
+                </button>
+            </div>
+        }*@
+
+        <!-- perulangan agar ketika diklik gambar yang sama,gambar nya tidak hilang -->
+        @for (var animalNumber = 0; animalNumber < suffledAnimals.Count; animalNumber++)
+        {
+            <!-- menampung  hewan per index yang sudah diacak-->
+            string animal = suffledAnimals[animalNumber];
+            string animalDescription = $"Animal #{animalNumber}";
+
+            <div class="col-3">
+                <!-- perintah ketika di klik dengan hewan yang sudah diacak-->
+                <button @onclick="(() => ButtonClick(animal,animalDescription))"
+                    type="button" class="btn btn-outline-dark">
+                    <!-- ukuran hewan -->
+                    <h1>@animal</h1>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- kode buat akses syntak c# -->
+@code {
+    // mengintansiasi string dengan nama animal
+    List<string> animals = new List<string>()
+    {
+        // pengisian objek
+        "🐴","🐴",
+        "🐇","🐇",
+        "🦜","🦜",
+        "🐒","🐒",
+        "🐉","🐉",
+        "🐠","🐠",
+        "🐢","🐢",
+        "🐤","🐤"
+    };
+
+    // mengintansiasi string dengan namasuffledAnimals
+    List<string> suffledAnimals = new List<string>();
+
+    //methode untuk merandom/mengacak gambar
+    private void SetUpGame()
+    {
+        //intansiasi funsi Random dengan nama random
+        Random random = new Random();
+        suffledAnimals = animals
+
+        //mengurutkan dengan di acak
+        .OrderBy(item => random.Next())
+        .ToList();
+        buffer = 0;
+    }
+
+    protected override void OnInitialized()
+    {
+        SetUpGame();
+    }
+
+    // inisialisasi string kosong
+    string clickedAnimal = string.Empty;
+    string clickedAnimalDescription = string.Empty;
+    int buffer = 0;
+
+    //methode buat gambar ketika di klik
+    private void ButtonClick(string animal,string animalDescription)
+    {
+        // kondisi dimana gambar kosong
+        if (clickedAnimal == string.Empty)
+        {
+            clickedAnimal = animal;
+            clickedAnimalDescription = animalDescription;
+        }
+        // kondisi gambar yang diklik sama dan tidak bisa mengklik gambar di posisi yang sama
+        else if (clickedAnimal == animal && clickedAnimalDescription != animalDescription)
+        {
+            // akan mengosongkan ketika gambar ketika kondisi diatas terpenuhi
+            suffledAnimals = suffledAnimals
+            .Select(item => item.Replace(animal, string.Empty))
+            .ToList();
+            clickedAnimal = string.Empty;
+            // kondisi ketika gambar semua nya sudah kosong dan akan me refresh dan memunculkan gambar
+            // yang sudah diacak
+            buffer++;
+            if(buffer == 8)
+            {
+                SetUpGame();
+            }
+        }
+        else
+        {
+            clickedAnimal = string.Empty;    
+        }
+
+    }
+}
+
+
+
+@*<h1>Hello, guys</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />*@
